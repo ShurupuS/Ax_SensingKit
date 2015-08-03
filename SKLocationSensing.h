@@ -29,6 +29,7 @@
 @protocol SKLocationSensingDelegate <NSObject>
 
 - (void)locationUpdateReceived:(CLLocation *)location;
+- (void)headingUpdateRecieved:(CLHeading *)heading;
 
 @end
 
@@ -37,9 +38,13 @@
 @property (weak, nonatomic) id <SKLocationSensingDelegate> delegate;
 
 - (BOOL)isLocationSensingAvailable;
+- (BOOL)isHeadingSensingAvailable;
 
 - (void)startLocationSensing;
 - (void)stopLocationSensing;
+
+- (void)startHeadingSensing;
+- (void)stopHeadingSensing;
 
 -(void)requestAlwaysAuthorization;
 

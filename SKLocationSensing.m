@@ -51,6 +51,10 @@
     return [CLLocationManager locationServicesEnabled];
 }
 
+- (BOOL)isHeadingSensingAvailable {
+    return [CLLocationManager headingAvailable];
+}
+
 #pragma mark start / stop sensing
 
 - (void)startLocationSensing
@@ -69,12 +73,35 @@
     }
 }
 
+- (void)startHeadingSensing {
+    if ([self isHeadingSensingAvailable]) {
+        [self.locationManager startUpdatingHeading];
+    }
+}
+
+- (void)stopHeadingSensing {
+    if ([self isHeadingSensingAvailable]) {
+        [self.locationManager stopUpdatingHeading];
+    }
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     for (CLLocation *location in locations)
     {
         [self.delegate locationUpdateReceived:location];
     }
+}
+
+- (void)locationManager:(nonnull CLLocationManager *)manager didUpdateHeading:(nonnull CLHeading *)newHeading {
+    [self.delegate headingUpdateRecieved:newHeading];
+}
+
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager {
+    if(!manager.heading) return YES; // Got nothing, We can assume we got to calibrate.
+    else if(manager.heading.headingAccuracy < 0 ) return YES; // 0 means invalid heading, need to calibrate
+    else if(manager.heading.headingAccuracy > 5 ) return YES; // 5 degrees is a small value correct for my needs, too.
+    else return NO; // All is good. Compass is precise enough.
 }
 
 -(void)requestAlwaysAuthorization {
